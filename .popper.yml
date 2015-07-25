@@ -11,3 +11,8 @@ tests: (npm run build > /dev/null) && browserify ./test.js
 watch: 
   - src
   - test.js
+
+browsers:
+  - chrome
+  - firefox
+  - ie11
