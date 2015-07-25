@@ -73,7 +73,7 @@ var is = _interopRequire(require("utilise/is"));
 
 log = log("[ri/offline]");
 err = err("[ri/offline]");
-},{"utilise/client":2,"utilise/clone":3,"utilise/debounce":4,"utilise/err":5,"utilise/group":6,"utilise/header":7,"utilise/is":8,"utilise/key":9,"utilise/log":10,"utilise/not":54,"utilise/parse":55,"utilise/proxy":56,"utilise/str":57,"utilise/values":58}],2:[function(require,module,exports){
+},{"utilise/client":2,"utilise/clone":3,"utilise/debounce":4,"utilise/err":5,"utilise/group":6,"utilise/header":7,"utilise/is":8,"utilise/key":9,"utilise/log":10,"utilise/not":53,"utilise/parse":54,"utilise/proxy":55,"utilise/str":56,"utilise/values":57}],2:[function(require,module,exports){
 module.exports = require('client')
 },{"client":11}],3:[function(require,module,exports){
 module.exports = require('clone')
@@ -85,13 +85,13 @@ module.exports = require('err')
 module.exports = require('group')
 },{"group":23}],7:[function(require,module,exports){
 module.exports = require('header')
-},{"header":27}],8:[function(require,module,exports){
+},{"header":26}],8:[function(require,module,exports){
 module.exports = require('is')
-},{"is":29}],9:[function(require,module,exports){
+},{"is":28}],9:[function(require,module,exports){
 module.exports = require('key')
-},{"key":30}],10:[function(require,module,exports){
+},{"key":29}],10:[function(require,module,exports){
 module.exports = require('log')
-},{"log":34}],11:[function(require,module,exports){
+},{"log":33}],11:[function(require,module,exports){
 module.exports = typeof window != 'undefined'
 },{}],12:[function(require,module,exports){
 var parse = require('parse')
@@ -257,13 +257,11 @@ function polyfill() {
     console.log('*****', d, '*****')
   }
 }
-},{"client":24,"owner":25}],24:[function(require,module,exports){
-arguments[4][11][0].apply(exports,arguments)
-},{"dup":11}],25:[function(require,module,exports){
+},{"client":11,"owner":24}],24:[function(require,module,exports){
 arguments[4][20][0].apply(exports,arguments)
-},{"client":26,"dup":20}],26:[function(require,module,exports){
+},{"client":25,"dup":20}],25:[function(require,module,exports){
 arguments[4][11][0].apply(exports,arguments)
-},{"dup":11}],27:[function(require,module,exports){
+},{"dup":11}],26:[function(require,module,exports){
 var has = require('has')
 
 module.exports = function header(header, value) {
@@ -276,13 +274,13 @@ module.exports = function header(header, value) {
                                    : d['headers'][header] == value
   }
 }
-},{"has":28}],28:[function(require,module,exports){
+},{"has":27}],27:[function(require,module,exports){
 module.exports = function has(o, k) {
   return k in o
 }
-},{}],29:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 arguments[4][13][0].apply(exports,arguments)
-},{"dup":13}],30:[function(require,module,exports){
+},{"dup":13}],29:[function(require,module,exports){
 var is = require('is')
   , str = require('str')
 
@@ -306,13 +304,13 @@ module.exports = function key(k, v){
     }
   }
 }
-},{"is":31,"str":32}],31:[function(require,module,exports){
+},{"is":30,"str":31}],30:[function(require,module,exports){
 arguments[4][13][0].apply(exports,arguments)
-},{"dup":13}],32:[function(require,module,exports){
+},{"dup":13}],31:[function(require,module,exports){
 arguments[4][15][0].apply(exports,arguments)
-},{"dup":15,"is":33}],33:[function(require,module,exports){
+},{"dup":15,"is":32}],32:[function(require,module,exports){
 arguments[4][13][0].apply(exports,arguments)
-},{"dup":13}],34:[function(require,module,exports){
+},{"dup":13}],33:[function(require,module,exports){
 var is = require('is')
   , to = require('to')
   , owner = require('owner')
@@ -326,23 +324,23 @@ module.exports = function log(prefix){
     return console.log.apply(console, args), d
   }
 }
-},{"is":35,"owner":36,"to":38}],35:[function(require,module,exports){
+},{"is":34,"owner":35,"to":37}],34:[function(require,module,exports){
 arguments[4][13][0].apply(exports,arguments)
-},{"dup":13}],36:[function(require,module,exports){
+},{"dup":13}],35:[function(require,module,exports){
 arguments[4][20][0].apply(exports,arguments)
-},{"client":37,"dup":20}],37:[function(require,module,exports){
+},{"client":36,"dup":20}],36:[function(require,module,exports){
 arguments[4][11][0].apply(exports,arguments)
-},{"dup":11}],38:[function(require,module,exports){
+},{"dup":11}],37:[function(require,module,exports){
 arguments[4][22][0].apply(exports,arguments)
-},{"dup":22}],39:[function(require,module,exports){
+},{"dup":22}],38:[function(require,module,exports){
 module.exports = function not(fn){
   return function(){
     return !fn.apply(this, arguments)
   }
 }
-},{}],40:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 arguments[4][14][0].apply(exports,arguments)
-},{"dup":14}],41:[function(require,module,exports){
+},{"dup":14}],40:[function(require,module,exports){
 var is = require('is')
 
 module.exports = function proxy(fn, ret, ctx){ 
@@ -351,20 +349,20 @@ module.exports = function proxy(fn, ret, ctx){
     return is.fn(ret) ? ret(result) : ret || result
   }
 }
-},{"is":42}],42:[function(require,module,exports){
+},{"is":41}],41:[function(require,module,exports){
 arguments[4][13][0].apply(exports,arguments)
-},{"dup":13}],43:[function(require,module,exports){
+},{"dup":13}],42:[function(require,module,exports){
 arguments[4][15][0].apply(exports,arguments)
-},{"dup":15,"is":44}],44:[function(require,module,exports){
+},{"dup":15,"is":43}],43:[function(require,module,exports){
 arguments[4][13][0].apply(exports,arguments)
-},{"dup":13}],45:[function(require,module,exports){
+},{"dup":13}],44:[function(require,module,exports){
 var keys = require('keys')
   , from = require('from')
 
 module.exports = function values(o) {
   return !o ? [] : keys(o).map(from(o))
 }
-},{"from":46,"keys":53}],46:[function(require,module,exports){
+},{"from":45,"keys":52}],45:[function(require,module,exports){
 var datum = require('datum')
   , key = require('key')
 
@@ -380,36 +378,36 @@ function from(o){
 function fromParent(k){
   return datum(this.parentNode)[k]
 }
-},{"datum":47,"key":49}],47:[function(require,module,exports){
+},{"datum":46,"key":48}],46:[function(require,module,exports){
 var sel = require('sel')
 
 module.exports = function datum(node){
   return sel(node).datum()
 }
-},{"sel":48}],48:[function(require,module,exports){
+},{"sel":47}],47:[function(require,module,exports){
 module.exports = function sel(){
   return d3.select.apply(this, arguments)
 }
-},{}],49:[function(require,module,exports){
-arguments[4][30][0].apply(exports,arguments)
-},{"dup":30,"is":50,"str":51}],50:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
+arguments[4][29][0].apply(exports,arguments)
+},{"dup":29,"is":49,"str":50}],49:[function(require,module,exports){
 arguments[4][13][0].apply(exports,arguments)
-},{"dup":13}],51:[function(require,module,exports){
+},{"dup":13}],50:[function(require,module,exports){
 arguments[4][15][0].apply(exports,arguments)
-},{"dup":15,"is":52}],52:[function(require,module,exports){
+},{"dup":15,"is":51}],51:[function(require,module,exports){
 arguments[4][13][0].apply(exports,arguments)
-},{"dup":13}],53:[function(require,module,exports){
+},{"dup":13}],52:[function(require,module,exports){
 module.exports = function keys(o) {
   return Object.keys(o || {})
 }
-},{}],54:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 module.exports = require('not')
-},{"not":39}],55:[function(require,module,exports){
+},{"not":38}],54:[function(require,module,exports){
 module.exports = require('parse')
-},{"parse":40}],56:[function(require,module,exports){
+},{"parse":39}],55:[function(require,module,exports){
 module.exports = require('proxy')
-},{"proxy":41}],57:[function(require,module,exports){
+},{"proxy":40}],56:[function(require,module,exports){
 module.exports = require('str')
-},{"str":43}],58:[function(require,module,exports){
+},{"str":42}],57:[function(require,module,exports){
 module.exports = require('values')
-},{"values":45}]},{},[1]);
+},{"values":44}]},{},[1]);

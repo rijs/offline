@@ -1,5 +1,5 @@
 var expect = require('chai').expect
-  , offline = require('../')
+  , offline = require('./')
   , keys = require('utilise/keys')
   , str = require('utilise/str')
   , core = require('rijs.core')
