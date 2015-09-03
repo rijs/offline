@@ -34,6 +34,7 @@ describe('Offline', function(){
 
   it('should load from localStorage', function(done){  
     var ripple1 = offline(data(fn(core())))
+
     ripple1
       .resource('foo', [1,2,3])
       .resource('bar', function(){ "baz" })
@@ -48,7 +49,7 @@ describe('Offline', function(){
 
       expect(ripple2.resources.bar.name).to.be.eql('bar')
       expect(ripple2.resources.bar.body).to.be.a('function')
-      expect(str(ripple2.resources.bar.body)).to.be.eql(str(function (){ "baz" }))
+      expect(str(ripple2.resources.bar.body).replace(/ /g, '')).to.be.eql(str(function (){ "baz" }).replace(/ /g, ''))
       expect(ripple2.resources.bar.headers['content-type']).to.be.eql('application/javascript')
       
       done()
@@ -56,3 +57,4 @@ describe('Offline', function(){
   })
 
 })
+
