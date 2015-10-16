@@ -73,38 +73,107 @@ var is = _interopRequire(require("utilise/is"));
 
 log = log("[ri/offline]");
 err = err("[ri/offline]");
-},{"utilise/client":2,"utilise/clone":3,"utilise/debounce":4,"utilise/err":5,"utilise/group":6,"utilise/header":7,"utilise/is":8,"utilise/key":9,"utilise/log":10,"utilise/not":53,"utilise/parse":54,"utilise/proxy":55,"utilise/str":56,"utilise/values":57}],2:[function(require,module,exports){
-module.exports = require('client')
-},{"client":11}],3:[function(require,module,exports){
-module.exports = require('clone')
-},{"clone":12}],4:[function(require,module,exports){
-module.exports = require('debounce')
-},{"debounce":17}],5:[function(require,module,exports){
-module.exports = require('err')
-},{"err":19}],6:[function(require,module,exports){
-module.exports = require('group')
-},{"group":23}],7:[function(require,module,exports){
-module.exports = require('header')
-},{"header":26}],8:[function(require,module,exports){
-module.exports = require('is')
-},{"is":28}],9:[function(require,module,exports){
-module.exports = require('key')
-},{"key":29}],10:[function(require,module,exports){
-module.exports = require('log')
-},{"log":33}],11:[function(require,module,exports){
+},{"utilise/client":2,"utilise/clone":3,"utilise/debounce":5,"utilise/err":6,"utilise/group":8,"utilise/header":10,"utilise/is":11,"utilise/key":12,"utilise/log":14,"utilise/not":15,"utilise/parse":17,"utilise/proxy":18,"utilise/str":20,"utilise/values":22}],2:[function(require,module,exports){
 module.exports = typeof window != 'undefined'
-},{}],12:[function(require,module,exports){
-var parse = require('parse')
-  , str = require('str')
-  , is = require('is')
+},{}],3:[function(require,module,exports){
+var parse = require('utilise/parse')
+  , str = require('utilise/str')
+  , is = require('utilise/is')
 
 module.exports = function clone(d) {
-  return !is.fn(d) 
+  return !is.fn(d) && !is.str(d)
        ? parse(str(d))
        : d
 }
 
-},{"is":13,"parse":14,"str":15}],13:[function(require,module,exports){
+},{"utilise/is":11,"utilise/parse":17,"utilise/str":20}],4:[function(require,module,exports){
+var sel = require('utilise/sel')
+
+module.exports = function datum(node){
+  return sel(node).datum()
+}
+},{"utilise/sel":19}],5:[function(require,module,exports){
+var is = require('utilise/is')
+
+module.exports = function debounce(d){
+  var pending, wait = is.num(d) ? d : 100
+
+  return is.fn(d) 
+       ? next(d)
+       : next
+
+  function next(fn){
+    return function(){
+      var ctx = this, args = arguments
+      pending && clearTimeout(pending)
+      pending = setTimeout(function(){ fn.apply(ctx, args) }, wait)
+    }
+  }
+  
+}
+},{"utilise/is":11}],6:[function(require,module,exports){
+var owner = require('utilise/owner')
+  , to = require('utilise/to')
+
+module.exports = function err(prefix){
+  return function(d){
+    if (!owner.console || !console.error.apply) return d;
+    var args = to.arr(arguments)
+    args.unshift(prefix.red ? prefix.red : prefix)
+    return console.error.apply(console, args), d
+  }
+}
+},{"utilise/owner":16,"utilise/to":21}],7:[function(require,module,exports){
+var datum = require('utilise/datum')
+  , key = require('utilise/key')
+
+module.exports = from
+from.parent = fromParent
+
+function from(o){
+  return function(k){
+    return key(k)(o)
+  }
+}
+
+function fromParent(k){
+  return datum(this.parentNode)[k]
+}
+},{"utilise/datum":4,"utilise/key":12}],8:[function(require,module,exports){
+var client = require('utilise/client')
+  , owner = require('utilise/owner')
+
+module.exports = function group(prefix, fn){
+  if (!owner.console) return fn()
+  if (!console.groupCollapsed) polyfill()
+  console.groupCollapsed(prefix)
+  fn()
+  console.groupEnd(prefix)
+}
+
+function polyfill() {
+  console.groupCollapsed = console.groupEnd = function(d){
+    console.log('*****', d, '*****')
+  }
+}
+},{"utilise/client":2,"utilise/owner":16}],9:[function(require,module,exports){
+module.exports = function has(o, k) {
+  return k in o
+}
+},{}],10:[function(require,module,exports){
+var has = require('utilise/has')
+
+module.exports = function header(header, value) {
+  var getter = arguments.length == 1
+  return function(d){ 
+    return !d                      ? null
+         : !has(d, 'headers')      ? null
+         : !has(d.headers, header) ? null
+         : getter                  ? d['headers'][header]
+                                   : d['headers'][header] == value
+  }
+}
+},{"utilise/has":9}],11:[function(require,module,exports){
 module.exports = is
 is.fn     = isFunction
 is.str    = isString
@@ -172,117 +241,14 @@ function isDef(d) {
 
 function isIn(set) {
   return function(d){
-    return  set.indexOf 
-         ? ~set.indexOf(d)
-         :  d in set
+    return !set ? false  
+         : set.indexOf ? ~set.indexOf(d)
+         : d in set
   }
 }
-},{}],14:[function(require,module,exports){
-module.exports = function parse(d){
-  return d && JSON.parse(d)
-}
-},{}],15:[function(require,module,exports){
-var is = require('is') 
-
-module.exports = function str(d){
-  return d === 0 ? '0'
-       : !d ? ''
-       : is.fn(d) ? '' + d
-       : is.obj(d) ? JSON.stringify(d)
-       : String(d)
-}
-},{"is":16}],16:[function(require,module,exports){
-arguments[4][13][0].apply(exports,arguments)
-},{"dup":13}],17:[function(require,module,exports){
-var is = require('is')
-
-module.exports = function debounce(d){
-  var pending, wait = is.num(d) ? d : 100
-
-  return is.fn(d) 
-       ? next(d)
-       : next
-
-  function next(fn){
-    return function(){
-      var ctx = this, args = arguments
-      pending && clearTimeout(pending)
-      pending = setTimeout(function(){ fn.apply(ctx, args) }, wait)
-    }
-  }
-  
-}
-},{"is":18}],18:[function(require,module,exports){
-arguments[4][13][0].apply(exports,arguments)
-},{"dup":13}],19:[function(require,module,exports){
-var owner = require('owner')
-  , to = require('to')
-
-module.exports = function err(prefix){
-  return function(d){
-    if (!owner.console || !console.error.apply) return d;
-    var args = to.arr(arguments)
-    args.unshift(prefix.red ? prefix.red : prefix)
-    return console.error.apply(console, args), d
-  }
-}
-},{"owner":20,"to":22}],20:[function(require,module,exports){
-(function (global){
-module.exports = require('client') ? /* istanbul ignore next */ window : global
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"client":21}],21:[function(require,module,exports){
-arguments[4][11][0].apply(exports,arguments)
-},{"dup":11}],22:[function(require,module,exports){
-module.exports = { 
-  arr : toArray
-}
-
-function toArray(d){
-  return Array.prototype.slice.call(d, 0)
-}
-},{}],23:[function(require,module,exports){
-var client = require('client')
-  , owner = require('owner')
-
-module.exports = function group(prefix, fn){
-  if (!owner.console) return fn()
-  if (!console.groupCollapsed) polyfill()
-  console.groupCollapsed(prefix)
-  fn()
-  console.groupEnd(prefix)
-}
-
-function polyfill() {
-  console.groupCollapsed = console.groupEnd = function(d){
-    console.log('*****', d, '*****')
-  }
-}
-},{"client":11,"owner":24}],24:[function(require,module,exports){
-arguments[4][20][0].apply(exports,arguments)
-},{"client":25,"dup":20}],25:[function(require,module,exports){
-arguments[4][11][0].apply(exports,arguments)
-},{"dup":11}],26:[function(require,module,exports){
-var has = require('has')
-
-module.exports = function header(header, value) {
-  var getter = arguments.length == 1
-  return function(d){ 
-    return !d                      ? null
-         : !has(d, 'headers')      ? null
-         : !has(d.headers, header) ? null
-         : getter                  ? d['headers'][header]
-                                   : d['headers'][header] == value
-  }
-}
-},{"has":27}],27:[function(require,module,exports){
-module.exports = function has(o, k) {
-  return k in o
-}
-},{}],28:[function(require,module,exports){
-arguments[4][13][0].apply(exports,arguments)
-},{"dup":13}],29:[function(require,module,exports){
-var is = require('is')
-  , str = require('str')
+},{}],12:[function(require,module,exports){
+var is = require('utilise/is')
+  , str = require('utilise/str')
 
 module.exports = function key(k, v){ 
   var set = arguments.length > 1
@@ -296,24 +262,23 @@ module.exports = function key(k, v){
          : is.arr(k) ? (k.map(copy), masked)
          : o[k] || !keys.length ? (set ? ((o[k] = is.fn(v) ? v(o[k]) : v), o)
                                        :   o[k])
-                                : (set ? key(keys.join('.'), v)(o[root] ? o[root] : (o[root] = {}))
+                                : (set ? (key(keys.join('.'), v)(o[root] ? o[root] : (o[root] = {})), o)
                                        : key(keys.join('.'))(o[root]))
 
-    function copy(d){
-      key(d, key(d)(o))(masked)
+    function copy(k){
+      var val = key(k)(o)
+      ;(val != undefined) && key(k, val)(masked)
     }
   }
 }
-},{"is":30,"str":31}],30:[function(require,module,exports){
-arguments[4][13][0].apply(exports,arguments)
-},{"dup":13}],31:[function(require,module,exports){
-arguments[4][15][0].apply(exports,arguments)
-},{"dup":15,"is":32}],32:[function(require,module,exports){
-arguments[4][13][0].apply(exports,arguments)
-},{"dup":13}],33:[function(require,module,exports){
-var is = require('is')
-  , to = require('to')
-  , owner = require('owner')
+},{"utilise/is":11,"utilise/str":20}],13:[function(require,module,exports){
+module.exports = function keys(o) {
+  return Object.keys(o || {})
+}
+},{}],14:[function(require,module,exports){
+var is = require('utilise/is')
+  , to = require('utilise/to')
+  , owner = require('utilise/owner')
 
 module.exports = function log(prefix){
   return function(d){
@@ -324,90 +289,72 @@ module.exports = function log(prefix){
     return console.log.apply(console, args), d
   }
 }
-},{"is":34,"owner":35,"to":37}],34:[function(require,module,exports){
-arguments[4][13][0].apply(exports,arguments)
-},{"dup":13}],35:[function(require,module,exports){
-arguments[4][20][0].apply(exports,arguments)
-},{"client":36,"dup":20}],36:[function(require,module,exports){
-arguments[4][11][0].apply(exports,arguments)
-},{"dup":11}],37:[function(require,module,exports){
-arguments[4][22][0].apply(exports,arguments)
-},{"dup":22}],38:[function(require,module,exports){
+},{"utilise/is":11,"utilise/owner":16,"utilise/to":21}],15:[function(require,module,exports){
 module.exports = function not(fn){
   return function(){
     return !fn.apply(this, arguments)
   }
 }
-},{}],39:[function(require,module,exports){
-arguments[4][14][0].apply(exports,arguments)
-},{"dup":14}],40:[function(require,module,exports){
-var is = require('is')
+},{}],16:[function(require,module,exports){
+(function (global){
+module.exports = require('utilise/client') ? /* istanbul ignore next */ window : global
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"utilise/client":2}],17:[function(require,module,exports){
+module.exports = function parse(d){
+  return d && JSON.parse(d)
+}
+},{}],18:[function(require,module,exports){
+var is = require('utilise/is')
 
 module.exports = function proxy(fn, ret, ctx){ 
   return function(){
     var result = fn.apply(ctx || this, arguments)
-    return is.fn(ret) ? ret(result) : ret || result
+    return is.fn(ret) ? ret.call(ctx || this, result) : ret || result
   }
 }
-},{"is":41}],41:[function(require,module,exports){
-arguments[4][13][0].apply(exports,arguments)
-},{"dup":13}],42:[function(require,module,exports){
-arguments[4][15][0].apply(exports,arguments)
-},{"dup":15,"is":43}],43:[function(require,module,exports){
-arguments[4][13][0].apply(exports,arguments)
-},{"dup":13}],44:[function(require,module,exports){
-var keys = require('keys')
-  , from = require('from')
+},{"utilise/is":11}],19:[function(require,module,exports){
+module.exports = function sel(){
+  return d3.select.apply(this, arguments)
+}
+},{}],20:[function(require,module,exports){
+var is = require('utilise/is') 
+
+module.exports = function str(d){
+  return d === 0 ? '0'
+       : !d ? ''
+       : is.fn(d) ? '' + d
+       : is.obj(d) ? JSON.stringify(d)
+       : String(d)
+}
+},{"utilise/is":11}],21:[function(require,module,exports){
+module.exports = { 
+  arr: toArray
+, obj: toObject
+}
+
+function toArray(d){
+  return Array.prototype.slice.call(d, 0)
+}
+
+function toObject(d) {
+  var by = 'id'
+    , o = {}
+
+  return arguments.length == 1 
+    ? (by = d, reduce)
+    : reduce.apply(this, arguments)
+
+  function reduce(p,v,i){
+    if (i === 0) p = {}
+    p[v[by]] = v
+    return p
+  }
+}
+},{}],22:[function(require,module,exports){
+var keys = require('utilise/keys')
+  , from = require('utilise/from')
 
 module.exports = function values(o) {
   return !o ? [] : keys(o).map(from(o))
 }
-},{"from":45,"keys":52}],45:[function(require,module,exports){
-var datum = require('datum')
-  , key = require('key')
-
-module.exports = from
-from.parent = fromParent
-
-function from(o){
-  return function(k){
-    return key(k)(o)
-  }
-}
-
-function fromParent(k){
-  return datum(this.parentNode)[k]
-}
-},{"datum":46,"key":48}],46:[function(require,module,exports){
-var sel = require('sel')
-
-module.exports = function datum(node){
-  return sel(node).datum()
-}
-},{"sel":47}],47:[function(require,module,exports){
-module.exports = function sel(){
-  return d3.select.apply(this, arguments)
-}
-},{}],48:[function(require,module,exports){
-arguments[4][29][0].apply(exports,arguments)
-},{"dup":29,"is":49,"str":50}],49:[function(require,module,exports){
-arguments[4][13][0].apply(exports,arguments)
-},{"dup":13}],50:[function(require,module,exports){
-arguments[4][15][0].apply(exports,arguments)
-},{"dup":15,"is":51}],51:[function(require,module,exports){
-arguments[4][13][0].apply(exports,arguments)
-},{"dup":13}],52:[function(require,module,exports){
-module.exports = function keys(o) {
-  return Object.keys(o || {})
-}
-},{}],53:[function(require,module,exports){
-module.exports = require('not')
-},{"not":38}],54:[function(require,module,exports){
-module.exports = require('parse')
-},{"parse":39}],55:[function(require,module,exports){
-module.exports = require('proxy')
-},{"proxy":40}],56:[function(require,module,exports){
-module.exports = require('str')
-},{"str":42}],57:[function(require,module,exports){
-module.exports = require('values')
-},{"values":44}]},{},[1]);
+},{"utilise/from":7,"utilise/keys":13}]},{},[1]);
