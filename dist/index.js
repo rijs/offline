@@ -1,74 +1,96 @@
-"use strict";
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = offline;
+
+var _debounce = require('utilise/debounce');
+
+var _debounce2 = _interopRequireDefault(_debounce);
+
+var _header = require('utilise/header');
+
+var _header2 = _interopRequireDefault(_header);
+
+var _client = require('utilise/client');
+
+var _client2 = _interopRequireDefault(_client);
+
+var _values = require('utilise/values');
+
+var _values2 = _interopRequireDefault(_values);
+
+var _clone = require('utilise/clone');
+
+var _clone2 = _interopRequireDefault(_clone);
+
+var _parse = require('utilise/parse');
+
+var _parse2 = _interopRequireDefault(_parse);
+
+var _group = require('utilise/group');
+
+var _group2 = _interopRequireDefault(_group);
+
+var _proxy = require('utilise/proxy');
+
+var _proxy2 = _interopRequireDefault(_proxy);
+
+var _not = require('utilise/not');
+
+var _not2 = _interopRequireDefault(_not);
+
+var _str = require('utilise/str');
+
+var _str2 = _interopRequireDefault(_str);
+
+var _key = require('utilise/key');
+
+var _key2 = _interopRequireDefault(_key);
+
+var _is = require('utilise/is');
+
+var _is2 = _interopRequireDefault(_is);
 
 /* istanbul ignore next */
-var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // -------------------------------------------
 // API: Pre-applies Scoped CSS [css=name]
 // -------------------------------------------
-module.exports = offline;
-
 function offline(ripple) {
-  if (!client || !window.localStorage) {
-    return;
-  }log("creating");
+  if (!_client2.default || !window.localStorage) return;
+  log('creating');
   load(ripple);
-  ripple.on("change.cache", debounce(1000)(cache(ripple)));
+  ripple.on('change.cache', (0, _debounce2.default)(1000)(cache(ripple)));
   return ripple;
 }
 
 function load(ripple) {
-  group("loading cache", function () {
-    (parse(localStorage.ripple) || []).forEach(silent(ripple));
+  (0, _group2.default)('loading cache', function () {
+    ((0, _parse2.default)(localStorage.ripple) || []).forEach(silent(ripple));
   });
 }
 
 function cache(ripple) {
   return function (res) {
-    log("cached");
-    var cachable = values(clone(ripple.resources)).filter(not(header("cache-control", "no-store")));
+    log('cached');
+    var cachable = (0, _values2.default)((0, _clone2.default)(ripple.resources)).filter((0, _not2.default)((0, _header2.default)('cache-control', 'no-store')));
 
-    cachable.filter(header("content-type", "application/javascript")).map(function (d) {
-      return d.body = str(ripple.resources[d.name].body);
+    cachable.filter((0, _header2.default)('content-type', 'application/javascript')).map(function (d) {
+      return d.body = (0, _str2.default)(ripple.resources[d.name].body);
     });
 
-    localStorage.ripple = str(cachable);
+    localStorage.ripple = (0, _str2.default)(cachable);
   };
 }
 
 function silent(ripple) {
   return function (res) {
-    return (res.headers.silent = true, ripple(res));
+    return res.headers.silent = true, ripple(res);
   };
 }
 
-var debounce = _interopRequire(require("utilise/debounce"));
-
-var header = _interopRequire(require("utilise/header"));
-
-var client = _interopRequire(require("utilise/client"));
-
-var values = _interopRequire(require("utilise/values"));
-
-var clone = _interopRequire(require("utilise/clone"));
-
-var parse = _interopRequire(require("utilise/parse"));
-
-var group = _interopRequire(require("utilise/group"));
-
-var proxy = _interopRequire(require("utilise/proxy"));
-
-var not = _interopRequire(require("utilise/not"));
-
-var str = _interopRequire(require("utilise/str"));
-
-var key = _interopRequire(require("utilise/key"));
-
-var log = _interopRequire(require("utilise/log"));
-
-var err = _interopRequire(require("utilise/err"));
-
-var is = _interopRequire(require("utilise/is"));
-
-log = log("[ri/offline]");
-err = err("[ri/offline]");
+var log = require('utilise/log')('[ri/offline]'),
+    err = require('utilise/err')('[ri/offline]');

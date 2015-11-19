@@ -45,8 +45,6 @@ import proxy from 'utilise/proxy'
 import not from 'utilise/not'
 import str from 'utilise/str'
 import key from 'utilise/key'
-import log from 'utilise/log'
-import err from 'utilise/err'
 import is from 'utilise/is'
-log = log('[ri/offline]')
-err = err('[ri/offline]')
+var log = require('utilise/log')('[ri/offline]')
+  , err = require('utilise/err')('[ri/offline]')
