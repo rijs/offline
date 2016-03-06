@@ -1,5 +1,5 @@
 // -------------------------------------------
-// API: Pre-applies Scoped CSS [css=name]
+// API: Cache to and Restore from localStorage
 // -------------------------------------------
 export default function offline(ripple){
   if (!client || !window.localStorage) return;
@@ -9,29 +9,20 @@ export default function offline(ripple){
   return ripple
 }
 
-function load(ripple) {
-  group('loading cache', function(){
-    (parse(localStorage.ripple) || [])
-      .forEach(silent(ripple))
-  })
-}
+const load = ripple => group('loading cache', d => 
+  (parse(localStorage.ripple) || [])
+    .map(ripple))
 
-function cache(ripple){
-  return function(res){
-    log('cached')
-    var cachable = values(clone(ripple.resources))
-          .filter(not(header('cache-control', 'no-store')))
+const cache = ripple => res => {
+  log('cached')
+  const cachable = values(clone(ripple.resources))
+    .filter(not(header('cache', 'no-store')))
 
-    cachable
-      .filter(header('content-type', 'application/javascript'))
-      .map(d => d.body = str(ripple.resources[d.name].body) )
+  cachable
+    .filter(header('content-type', 'application/javascript'))
+    .map(d => d.body = str(ripple.resources[d.name].body) )
 
-    localStorage.ripple = str(cachable)
-  }
-}
-
-function silent(ripple) {
-  return res => (res.headers.silent = true, ripple(res))
+  localStorage.ripple = str(cachable)
 }
 
 import debounce from 'utilise/debounce'
@@ -41,10 +32,7 @@ import values from 'utilise/values'
 import clone from 'utilise/clone'
 import parse from 'utilise/parse'
 import group from 'utilise/group'
-import proxy from 'utilise/proxy'
 import not from 'utilise/not'
 import str from 'utilise/str'
-import key from 'utilise/key'
-import is from 'utilise/is'
-var log = require('utilise/log')('[ri/offline]')
-  , err = require('utilise/err')('[ri/offline]')
+const log = require('utilise/log')('[ri/offline]')
+    , err = require('utilise/err')('[ri/offline]')

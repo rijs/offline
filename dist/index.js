@@ -33,10 +33,6 @@ var _group = require('utilise/group');
 
 var _group2 = _interopRequireDefault(_group);
 
-var _proxy = require('utilise/proxy');
-
-var _proxy2 = _interopRequireDefault(_proxy);
-
 var _not = require('utilise/not');
 
 var _not2 = _interopRequireDefault(_not);
@@ -45,19 +41,11 @@ var _str = require('utilise/str');
 
 var _str2 = _interopRequireDefault(_str);
 
-var _key = require('utilise/key');
-
-var _key2 = _interopRequireDefault(_key);
-
-var _is = require('utilise/is');
-
-var _is2 = _interopRequireDefault(_is);
-
 /* istanbul ignore next */
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // -------------------------------------------
-// API: Pre-applies Scoped CSS [css=name]
+// API: Cache to and Restore from localStorage
 // -------------------------------------------
 function offline(ripple) {
   if (!_client2.default || !window.localStorage) return;
@@ -67,16 +55,16 @@ function offline(ripple) {
   return ripple;
 }
 
-function load(ripple) {
-  (0, _group2.default)('loading cache', function () {
-    ((0, _parse2.default)(localStorage.ripple) || []).forEach(silent(ripple));
+var load = function load(ripple) {
+  return (0, _group2.default)('loading cache', function (d) {
+    return ((0, _parse2.default)(localStorage.ripple) || []).map(ripple);
   });
-}
+};
 
-function cache(ripple) {
+var cache = function cache(ripple) {
   return function (res) {
     log('cached');
-    var cachable = (0, _values2.default)((0, _clone2.default)(ripple.resources)).filter((0, _not2.default)((0, _header2.default)('cache-control', 'no-store')));
+    var cachable = (0, _values2.default)((0, _clone2.default)(ripple.resources)).filter((0, _not2.default)((0, _header2.default)('cache', 'no-store')));
 
     cachable.filter((0, _header2.default)('content-type', 'application/javascript')).map(function (d) {
       return d.body = (0, _str2.default)(ripple.resources[d.name].body);
@@ -84,13 +72,7 @@ function cache(ripple) {
 
     localStorage.ripple = (0, _str2.default)(cachable);
   };
-}
-
-function silent(ripple) {
-  return function (res) {
-    return res.headers.silent = true, ripple(res);
-  };
-}
+};
 
 var log = require('utilise/log')('[ri/offline]'),
     err = require('utilise/err')('[ri/offline]');

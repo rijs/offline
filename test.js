@@ -1,4 +1,5 @@
 var expect = require('chai').expect
+  , time = require('utilise/time')
   , keys = require('utilise/keys')
   , str = require('utilise/str')
   , core = require('rijs.core').default
@@ -25,11 +26,11 @@ describe('Offline', function(){
 
     expect(localStorage.ripple).to.not.be.ok
     
-    setTimeout(function(){
+    time(1050, function(){
       expect(localStorage.ripple.replace(/[ |;]/g, '')).to.eql(
-        '[{"name":"foo","body":[1,2,3],"headers":{"content-type":"application/data","listeners":[]}},{"name":"bar","headers":{"content-type":"application/javascript"},"body":"function(){\\"baz\\"}"}]')
+        '[{"name":"foo","body":[1,2,3],"headers":{"content-type":"application/data"}},{"name":"bar","headers":{"content-type":"application/javascript"},"body":"function(){\\"baz\\"}"}]')
       done()
-    }, 1050)    
+    })
   })
 
   it('should load from localStorage', function(done){  
@@ -39,7 +40,7 @@ describe('Offline', function(){
       .resource('foo', [1,2,3])
       .resource('bar', function(){ "baz" })
 
-    setTimeout(function(){
+    time(1050, function(){
       var ripple2 = offline(data(fn(core())))
       expect(keys(ripple2.resources)).to.eql(['foo', 'bar'])
 
@@ -53,7 +54,7 @@ describe('Offline', function(){
       expect(ripple2.resources.bar.headers['content-type']).to.be.eql('application/javascript')
       
       done()
-    }, 1050)
+    })
   })
 
 })
