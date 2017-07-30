@@ -1,78 +1,43 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = offline;
-
-var _debounce = require('utilise/debounce');
-
-var _debounce2 = _interopRequireDefault(_debounce);
-
-var _header = require('utilise/header');
-
-var _header2 = _interopRequireDefault(_header);
-
-var _client = require('utilise/client');
-
-var _client2 = _interopRequireDefault(_client);
-
-var _values = require('utilise/values');
-
-var _values2 = _interopRequireDefault(_values);
-
-var _clone = require('utilise/clone');
-
-var _clone2 = _interopRequireDefault(_clone);
-
-var _parse = require('utilise/parse');
-
-var _parse2 = _interopRequireDefault(_parse);
-
-var _group = require('utilise/group');
-
-var _group2 = _interopRequireDefault(_group);
-
-var _not = require('utilise/not');
-
-var _not2 = _interopRequireDefault(_not);
-
-var _str = require('utilise/str');
-
-var _str2 = _interopRequireDefault(_str);
-
-/* istanbul ignore next */
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 // -------------------------------------------
 // API: Cache to and Restore from localStorage
 // -------------------------------------------
-function offline(ripple) {
-  if (!_client2.default || !window.localStorage) return;
+module.exports = function offline(ripple) {
+  if (!client || !window.localStorage) return;
   log('creating');
   load(ripple);
-  ripple.on('change.cache', (0, _debounce2.default)(1000)(cache(ripple)));
+  ripple.on('change.cache', debounce(1000)(cache(ripple)));
   return ripple;
-}
+};
 
 var load = function load(ripple) {
-  return (0, _group2.default)('loading cache', function (d) {
-    return ((0, _parse2.default)(localStorage.ripple) || []).map(ripple);
+  return group('loading cache', function (d) {
+    return (parse(localStorage.ripple) || []).map(ripple);
   });
 };
 
 var cache = function cache(ripple) {
   return function (res) {
     log('cached');
-    var cachable = (0, _values2.default)((0, _clone2.default)(ripple.resources)).filter((0, _not2.default)((0, _header2.default)('cache', 'no-store')));
+    var cachable = values(clone(ripple.resources)).filter(not(header('cache', 'no-store')));
 
-    cachable.filter((0, _header2.default)('content-type', 'application/javascript')).map(function (d) {
-      return d.body = (0, _str2.default)(ripple.resources[d.name].body);
+    cachable.filter(header('content-type', 'application/javascript')).map(function (d) {
+      return d.body = str(ripple.resources[d.name].body);
     });
 
-    localStorage.ripple = (0, _str2.default)(cachable);
+    localStorage.ripple = str(cachable);
   };
 };
 
-var log = require('utilise/log')('[ri/offline]'),
+var debounce = require('utilise/debounce'),
+    header = require('utilise/header'),
+    client = require('utilise/client'),
+    values = require('utilise/values'),
+    clone = require('utilise/clone'),
+    parse = require('utilise/parse'),
+    group = require('utilise/group'),
+    not = require('utilise/not'),
+    str = require('utilise/str'),
+    log = require('utilise/log')('[ri/offline]'),
     err = require('utilise/err')('[ri/offline]');

@@ -1,7 +1,7 @@
 // -------------------------------------------
 // API: Cache to and Restore from localStorage
 // -------------------------------------------
-export default function offline(ripple){
+module.exports = function offline(ripple){
   if (!client || !window.localStorage) return;
   log('creating')
   load(ripple)
@@ -25,14 +25,14 @@ const cache = ripple => res => {
   localStorage.ripple = str(cachable)
 }
 
-import debounce from 'utilise/debounce'
-import header from 'utilise/header'
-import client from 'utilise/client'
-import values from 'utilise/values'
-import clone from 'utilise/clone'
-import parse from 'utilise/parse'
-import group from 'utilise/group'
-import not from 'utilise/not'
-import str from 'utilise/str'
-const log = require('utilise/log')('[ri/offline]')
+const debounce = require('utilise/debounce')
+    , header = require('utilise/header')
+    , client = require('utilise/client')
+    , values = require('utilise/values')
+    , clone = require('utilise/clone')
+    , parse = require('utilise/parse')
+    , group = require('utilise/group')
+    , not = require('utilise/not')
+    , str = require('utilise/str')
+    , log = require('utilise/log')('[ri/offline]')
     , err = require('utilise/err')('[ri/offline]')
