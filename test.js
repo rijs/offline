@@ -2,10 +2,10 @@ var expect = require('chai').expect
   , time = require('utilise/time')
   , keys = require('utilise/keys')
   , str = require('utilise/str')
-  , core = require('rijs.core').default
-  , data = require('rijs.data').default
-  , fn = require('rijs.fn').default
-  , offline = require('./').default
+  , core = require('rijs.core')
+  , data = require('rijs.data')
+  , fn = require('rijs.fn')
+  , offline = require('./')
   
 describe('Offline', function(){
 
